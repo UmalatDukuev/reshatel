@@ -78,9 +78,6 @@ def get_points_dist_constraint(v, d, dv):
 
 
 def get_angle_constraint(v, angle, dv):
-    # 0 < angle < pi / 2
-    # angle += 0.01
-    #инициализация тригонометрии
     MIN_VALUE = 1e-5
     cos2 = np.cos(angle * np.pi / 180) ** 2
     if cos2 < MIN_VALUE:
@@ -89,14 +86,11 @@ def get_angle_constraint(v, angle, dv):
     if sin2 < MIN_VALUE:
         sin2 = MIN_VALUE
 
-    #инициализация начальных векторов
-
     x12 = v[X_2] + dv[X_2] - v[X_1] - dv[X_1]
     y12 = v[Y_2] + dv[Y_2] - v[Y_1] - dv[Y_1]
     x34 = v[X_4] + dv[X_4] - v[X_3] - dv[X_3]
     y34 = v[Y_4] + dv[Y_4] - v[Y_3] - dv[Y_3]
 
-    # вектор промежуточных вычислений для уравнений и Якобиана.
     a = np.array([
         sin2 * (x12 ** 2 * x34 ** 2 + y12 ** 2 * y34 ** 2) + 2 * x12 * x34 * y12 * y34 - cos2 * (
                 x12 ** 2 * y34 ** 2 + y12 ** 2 * x34 ** 2),
@@ -110,7 +104,6 @@ def get_angle_constraint(v, angle, dv):
         2 * sin2 * y12 ** 2 * y34 + 2 * x12 * x34 * y12 - 2 * cos2 * x12 ** 2 * y34
     ], dtype=np.double)
 
-    # Вектор F описывает отклонение текущего состояния системы от удовлетворяющего ограничения.
     F = np.array([
         a[0],
         dv[X_1] + dv[L] * a[1],
@@ -122,7 +115,6 @@ def get_angle_constraint(v, angle, dv):
         dv[X_4] + dv[L] * a[7],
         dv[Y_4] + dv[L] * a[8]
     ])
-    # матрица якоби
     J = np.array([
         [0, a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8]],
         [a[1], 1 + 2 * dv[L] * (sin2 * x34 ** 2 - cos2 * y34 ** 2), 2 * dv[L] * x34 * y34,
